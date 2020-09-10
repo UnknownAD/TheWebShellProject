@@ -13,7 +13,7 @@ echo"          \ V / ___ \| |___ | || |_| / ___ \| || |_| |  _ </_  _\    \n";
 echo"           \_/_/   \_\_____|___|____/_/   \_\_| \___/|_| \_\ \/      \n";
 echo"                                                                     \n";
 echo"                                                                     \n";
-echo"                                                By: TheLazyCoder -_- \n";
+echo"                                                By: UnknownAD -_- \n";
 
 
 $wordlist=array("/var/www/html/shell_magnify.php","c:/wamp/www/shell_magnify.php");
