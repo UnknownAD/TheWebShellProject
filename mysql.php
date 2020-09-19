@@ -1,7 +1,4 @@
 <?php
-// xml innjection
-// german
-//getenv php
 echo"                ____  _   _ _____ _     _                            \n";
 echo"         __/\__/ ___|| | | | ____| |   | |                           \n";
 echo"         \    /\___ \| |_| |  _| | |   | |                           \n";
